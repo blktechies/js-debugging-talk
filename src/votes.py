@@ -11,10 +11,18 @@ No warranty expressed or implied
 import redis
 import json
 from random import shuffle
-from flask import Flask, request, render_template, url_for, redirect
+from flask import Flask, request, render_template, url_for, redirect, jsonify, abort
 
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 app = Flask(__name__)
+
+# A handy helper from http://flask.pocoo.org/snippets/45/
+def request_wants_json():
+    best = request.accept_mimetypes \
+        .best_match(['application/json', 'text/html'])
+    return best == 'application/json' and \
+        request.accept_mimetypes[best] > \
+        request.accept_mimetypes['text/html']
 
 def valid_question(form):
     if (form['question'] and len(form['question']) > 50):
@@ -28,6 +36,19 @@ def add_new_question(form):
     r.set("questions:" + question_id + ":down", "0")
     r.set("questions:" + question_id + ":text", form['question'])
     return question_id
+
+def question_details(question_id, if_none_404 = True):
+    question_id = str(question_id)
+    up = r.get("questions:" + question_id + ":up")
+    down = r.get("questions:" + question_id + ":down")
+    question = r.get("questions:" + question_id + ":text")
+    if not question:
+        if if_none_404:
+            abort(404)
+        else:
+            return False
+    return { "up": up, "down": down, "question": question, "id": int(question_id) }
+
 
 def all_questions():
     max_id = r.get('globals.question_id')
@@ -70,21 +91,21 @@ def new_question():
 
 @app.route("/question/<int:question_id>", methods=['GET', 'HEAD'])
 def display_question(question_id):
-    question_id = str(question_id)
-    up = r.get("questions:" + question_id + ":up")
-    down = r.get("questions:" + question_id + ":down")
-    question = r.get("questions:" + question_id + ":text")
-    resp = { "up": up, "down": down, "question": question, "id": int(question_id) }
+    resp = question_details(question_id)
     return render_template("question.html", question=resp)
 
 @app.route("/question/<int:question_id>/up", methods=['POST'])
 def vote_up(question_id):
     votes = do_vote(question_id, "up")
+    if request_wants_json():
+        return jsonify(question_details(question_id))
     return redirect(url_for('display_question', question_id=question_id))
 
 @app.route("/question/<int:question_id>/down", methods=['POST'])
 def vote_down(question_id):
     votes = do_vote(question_id, "down")
+    if request_wants_json():
+        return jsonify(question_details(question_id))
     return redirect(url_for('display_question', question_id=question_id))
 
 @app.route("/question/<int:question_id>/up")
