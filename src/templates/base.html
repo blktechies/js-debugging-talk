@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+    <head>
+        <title>{% block title %}{% endblock %} | Up (or not)</title>
+        <link rel="stylesheet" type="text/css" href="/static/bootstrap-2.3.1.css">
+        <script src="/static/jquery-1.9.1.js"></script>
+        <script src="/static/bootstrap-2.3.1.js"></script>
+    </head>
+    <body>
+        {% if error %}
+        <div class="alert alert-error">
+            <div class="container">
+                <div class="row">
+                    <div class="span12">
+                        <h3>{% block error %}{{ error }}{% endblock %}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="container">
+
+            <div class="row">
+                <h1 class="title span4"><a href="/">Up (or not)</a></h1>
+            </div>
+            <div class="row">
+                <div class="offset4 span8">
+                    {% block follow %}{% endblock %}
+                </div>
+            </div>
+            {% block content %}{% endblock %}
+        </div>
+        <div class="container">
+            <hr>
+            <div class="row">
+                <div class="span2">
+                    <a href="http://blktechies.org">BlackTechies</a>
+                </div>
+                <div class="span8">
+                    {% block footer %}{% endblock %}
+                </div>
+                <div class="span2">
+                    &copy; 2013
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

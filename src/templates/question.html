@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Add a New Question{% endblock %}
+
+{% block follow %}
+<p class="lead">
+    <strong>Be Smug!</strong>
+    Enter a new question or opinion and have people vote on it
+</p>
+{% endblock %}
+
+{% block content %}
+<hr>
+<div class="row">
+    <h3 class="span4">Tell me how you really feel:</h3>
+</div>
+<div class="row">
+    <div class="span8 offset4">
+        <h2>{{ question.question }}</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="span4 offset4">
+        <form method="POST" action="{{ request.path }}/up">
+            <button class="btn btn-large btn-success" type="submit" name="up">&uArr; Yes</button>
+        </form>
+        ({{ question.up }})
+    </div>
+    <div class="span4">
+        <form method="POST" action="{{ request.path }}/down">
+            <button class="btn btn-large btn-danger" type="submit" name="down">&dArr; No</button>
+        </form>
+        ({{ question.down }})
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Add a New Question{% endblock %}
+
+{% block follow %}
+<p class="lead">
+    <strong>Be Smug!</strong>
+    Vote on any crazy idea here, or put up your own idea and let people vote on it.
+</p>
+{% endblock %}
+
+{% block content %}
+<hr>
+<div class="row">
+    <h3 class="span4">What are people voting on?</h3>
+</div>
+<div class="row">
+    {% if questions %}
+    <ul class="unstyled">
+        {% for question in questions %}
+        <li class="span8 offset4">
+            <a href="/question/{{ question.id }}">
+                <div class="well">
+                    {{ question.body }}
+                </div>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="span8 offset4">
+        <p class="lead">
+            <strong>No Questions Yet!</strong>
+            <a href="/question/new">Do you dare to be the first?</a>
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Add a New Question{% endblock %}
+
+{% block follow %}
+<p class="lead">
+    <strong>Be Smug!</strong>
+    Enter a new question or opinion and have people vote on it
+</p>
+{% endblock %}
+
+{% block content %}
+<hr>
+<div class="row">
+    <h3 class="span4">What do you want opinions on?</h3>
+</div>
+<div class="row">
+    <div class="span8 offset4">
+        <form method="POST">
+            <div class="row">
+                <div class="span6">
+                    <label for="question_body">
+                        Enter your question or opinion
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="span6">
+                    <textarea id="question_body" rows="5" class="span6"
+                              placeholder="type it here..." name="question"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="span6">
+                    <input class="btn" type="reset" value="Reset">
+                    <input class="btn btn-primary pull-right" type="submit" value="Submit">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
