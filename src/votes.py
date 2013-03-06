@@ -1,3 +1,13 @@
+"""
+Copyright 2013, Kyle Wanamaker
+http://github.com/KyleWpppd
+
+Licensed under the GPLv3
+http://www.gnu.org/licenses/gpl-3.0.html
+
+No warranty expressed or implied
+"""
+
 import redis
 import json
 from random import shuffle
@@ -7,7 +17,7 @@ r = redis.StrictRedis(host='localhost', port=6379, db=0)
 app = Flask(__name__)
 
 def valid_question(form):
-    if (form['question'] and len(form['question']) < 50):
+    if (form['question'] and len(form['question']) > 50):
         return True
     else:
         return False
@@ -20,17 +30,21 @@ def add_new_question(form):
     return question_id
 
 def all_questions():
-    max_id = int(r.get('globals.question_id'))
-    # take 10 at random
-    all_ids = range(1, max_id+1)
-    shuffle(all_ids)
-    all_ids = all_ids[:11]
-    all_questions = []
-    for q_id in all_ids:
-        body = r.get("questions:" + str(q_id) + ":text")
-        q = { "id": q_id, "body": body }
-        all_questions.append(q)
-    return all_questions
+    max_id = r.get('globals.question_id')
+    if max_id is None:
+        return []
+    else:
+        max_id = int(max_id)
+        all_ids = range(1, max_id+1)
+        # take 10 at random
+        shuffle(all_ids)
+        all_ids = all_ids[:11]
+        all_questions = []
+        for q_id in all_ids:
+            body = r.get("questions:" + str(q_id) + ":text")
+            q = { "id": q_id, "body": body }
+            all_questions.append(q)
+        return all_questions
 
 def do_vote(question_id, direction):
     question_id = str(question_id)
@@ -49,10 +63,10 @@ def new_question():
     if request.method == 'POST':
         if valid_question(request.form):
             qid = add_new_question(request.form)
-            question_id = qid
+            return redirect(url_for('display_question', question_id=qid))
         else:
-            error = "Invalid Question."
-    return render_template('new_question.html', question_id=question_id, error=error)
+            error = "Couldn't save your question. It must be over 50 characters."
+    return render_template('new_question.html', error=error)
 
 @app.route("/question/<int:question_id>", methods=['GET', 'HEAD'])
 def display_question(question_id):
@@ -77,10 +91,6 @@ def vote_down(question_id):
 @app.route("/question/<int:question_id>/down")
 def redirect_to_question(question_id):
     return redirect(url_for('display_question', question_id=question_id))
-
-@app.route("/redis")
-def list_keys():
-    return r.keys('*')
 
 
 if __name__ == "__main__":
