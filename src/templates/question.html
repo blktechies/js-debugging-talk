@@ -20,16 +20,21 @@
 </div>
 <div class="row">
     <div class="span4 offset4">
-        <form method="POST" action="{{ request.path }}/up">
+        <form method="POST" action="{{ request.path }}/up" id="vote_up">
             <button class="btn btn-large btn-success" type="submit" name="up">&uArr; Yes</button>
+            <span class="vote-count up">
+                ({{ question.up }})
+            </span>
         </form>
-        ({{ question.up }})
+
     </div>
     <div class="span4">
-        <form method="POST" action="{{ request.path }}/down">
+        <form method="POST" action="{{ request.path }}/down" id="vote_down">
             <button class="btn btn-large btn-danger" type="submit" name="down">&dArr; No</button>
+            <span class="vote-count down">
+                ({{ question.down }})
+            </span>
         </form>
-        ({{ question.down }})
     </div>
 </div>
 {% endblock %}
